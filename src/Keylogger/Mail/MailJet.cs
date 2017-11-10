@@ -9,10 +9,16 @@ using System.Threading.Tasks;
 
 namespace Keylogger.Mail
 {
+    /// <summary>
+    /// Represents mailjet.com provider for sending emails for free
+    /// </summary>
     public class MailJet : IMailProvider
     {
         private string PublicKey;
         private string PrivateKey;
+
+
+
 
         public MailJet(string publicKey, string privateKey)
         {
@@ -20,6 +26,15 @@ namespace Keylogger.Mail
             PrivateKey = privateKey;
         }
 
+
+
+
+        /// <summary>
+        /// This function sends mail specified by arguments
+        /// </summary>
+        /// <param name="address">Recipient of the email</param>
+        /// <param name="subject">Email's subject</param>
+        /// <param name="message">Text of the email</param>
         public void SendMail(string address, string subject, string message)
         {
             using (SmtpClient client = new SmtpClient())
